@@ -1,0 +1,206 @@
+class ClinicAppointment:
+    def __init__(self):
+        self.appointments = {}  # {doctor_name: {time_slot: [patients]}}
+        self.time_slots = ["10am", "11am", "12pm", "2pm", "3pm"]
+
+    def book_appointment(self):
+        name = input("Enter patient name: ")
+        age = input("Enter age: ")
+        mobile = input("Enter mobile number: ")
+        doctor = input("Enter preferred doctor name: ")
+
+        # initialize doctor's schedule if not present
+        if doctor not in self.appointments:
+            self.appointments[doctor] = {slot: [] for slot in self.time_slots}
+
+        print("\nAvailable time slots:")
+        for i, slot in enumerate(self.time_slots, start=1):
+            print(f"{i}. {slot}")
+
+        slot_choice = int(input("Select time slot (1-5): ")) - 1
+        slot = self.time_slots[slot_choice]
+
+        if len(self.appointments[doctor][slot]) < 3:
+            self.appointments[doctor][slot].append({
+                "name": name,
+                "age": age,
+                "mobile": mobile,
+                "slot": slot,
+                "doctor": doctor
+            })
+            print(f"\n✅ Appointment booked successfully with Dr.{doctor} at {slot}.")
+        else:
+            print(f"\n❌ Sorry, Dr.{doctor}'s {slot} slot is full. Please choose another.")
+
+    def view_appointment(self):
+        mobile = input("Enter your mobile number to view your appointment: ")
+        found = False
+        for doctor, slots in self.appointments.items():
+            for slot, patients in slots.items():
+                for p in patients:
+                    if p["mobile"] == mobile:
+                        print(f"\n📅 Appointment Details:\n"
+                              f"Patient: {p['name']}\nAge: {p['age']}\nDoctor: {p['doctor']}\nSlot: {p['slot']}")
+                        found = True
+        if not found:
+            print("❌ No appointment found for this number.")
+
+    def cancel_appointment(self):
+        mobile = input("Enter your mobile number to cancel appointment: ")
+        found = False
+        for doctor, slots in self.appointments.items():
+            for slot, patients in slots.items():
+                for p in patients:
+                    if p["mobile"] == mobile:
+                        patients.remove(p)
+                        print(f"\n🗑️ Appointment with Dr.{doctor} at {slot} has been cancelled.")
+                        found = True
+                        break
+        if not found:
+            print("❌ No appointment found for this number.")
+
+    def show_all_appointments(self):
+        print("\n---- All Appointments ----")
+        for doctor, slots in self.appointments.items():
+            print(f"\nDoctor: {doctor}")
+            for slot, patients in slots.items():
+                print(f"  {slot}: {len(patients)} appointments")
+                for p in patients:
+                    print(f"    - {p['name']} ({p['mobile']})")
+
+# -------- MAIN MENU --------
+clinic = ClinicAppointment()
+
+while True:
+    print("\n=== Clinic Appointment System ===")
+    print("1. Book Appointment")
+    print("2. View Appointment")
+    print("3. Cancel Appointment")
+    print("4. Show All Appointments (Admin)")
+    print("5. Exit")
+
+    choice = input("Enter choice: ")
+
+    if choice == "1":
+        clinic.book_appointment()
+    elif choice == "2":
+        clinic.view_appointment()
+    elif choice == "3":
+        clinic.cancel_appointment()
+    elif choice == "4":
+        clinic.show_all_appointments()
+    elif choice == "5":
+        print("👋 Thank you for using Clinic Appointment System!")
+        break
+    else:
+        print("❌ Invalid choice. Try again.")
+		
+		
+		
+		
+#2
+
+class SchoolManagement:
+    def __init__(self):
+        self.students = {}   # {student_id: {details}}
+        self.next_id = 1
+
+    def new_admission(self):
+        name = input("Enter student name: ")
+        age = int(input("Enter age: "))
+        student_class = int(input("Enter class (1-12): "))
+        mobile = input("Enter guardian's mobile number: ")
+
+        # Validation
+        if not (5 <= age <= 18):
+            print("❌ Invalid age! Age must be between 5 and 18.")
+            return
+        if len(mobile) != 10 or not mobile.isdigit():
+            print("❌ Invalid mobile number! Must be 10 digits.")
+            return
+
+        # Assign unique ID
+        student_id = self.next_id
+        self.next_id += 1
+
+        self.students[student_id] = {
+            "name": name,
+            "age": age,
+            "class": student_class,
+            "mobile": mobile
+        }
+        print(f"\n✅ Admission successful! Student ID: {student_id}")
+
+    def view_student(self):
+        student_id = int(input("Enter Student ID to view: "))
+        if student_id in self.students:
+            s = self.students[student_id]
+            print(f"\n📘 Student Details:")
+            print(f"ID: {student_id}")
+            print(f"Name: {s['name']}")
+            print(f"Age: {s['age']}")
+            print(f"Class: {s['class']}")
+            print(f"Guardian Mobile: {s['mobile']}")
+        else:
+            print("❌ Student ID not found.")
+
+    def update_info(self):
+        student_id = int(input("Enter Student ID to update: "))
+        if student_id in self.students:
+            print("1. Update Mobile Number")
+            print("2. Update Class")
+            choice = input("Enter your choice: ")
+
+            if choice == "1":
+                new_mobile = input("Enter new mobile number: ")
+                if len(new_mobile) == 10 and new_mobile.isdigit():
+                    self.students[student_id]["mobile"] = new_mobile
+                    print("✅ Mobile number updated successfully!")
+                else:
+                    print("❌ Invalid mobile number!")
+            elif choice == "2":
+                new_class = int(input("Enter new class (1-12): "))
+                if 1 <= new_class <= 12:
+                    self.students[student_id]["class"] = new_class
+                    print("✅ Class updated successfully!")
+                else:
+                    print("❌ Invalid class!")
+            else:
+                print("❌ Invalid choice.")
+        else:
+            print("❌ Student ID not found.")
+
+    def remove_student(self):
+        student_id = int(input("Enter Student ID to remove: "))
+        if student_id in self.students:
+            del self.students[student_id]
+            print("🗑️ Student record removed successfully!")
+        else:
+            print("❌ Student ID not found.")
+
+# ---- MAIN MENU ----
+school = SchoolManagement()
+
+while True:
+    print("\n=== School Management System ===")
+    print("1. New Admission")
+    print("2. View Student Details")
+    print("3. Update Student Info")
+    print("4. Remove Student Record")
+    print("5. Exit")
+
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        school.new_admission()
+    elif choice == "2":
+        school.view_student()
+    elif choice == "3":
+        school.update_info()
+    elif choice == "4":
+        school.remove_student()
+    elif choice == "5":
+        print("👋 Exiting system. Goodbye!")
+        break
+    else:
+        print("❌ Invalid choice! Please try again.")
